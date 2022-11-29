@@ -10,6 +10,7 @@ life_clean <- read.csv("data/life_clean.csv")
 # remove some categorical variables
 df <- life_clean %>% select(-c(Country,Year,Status_Developing))%>% na.omit()
 x <- df %>% select(-c(Life.expectancy))
+
 # Model Building : Elastic Net Regression
 control <- trainControl(method = "repeatedcv",
                         number = 5,
@@ -32,5 +33,5 @@ rsq <- cor(df$Life.expectancy, x_hat_pre)^2
 rsq
 
 # Mean Squared Error
-mse <- mean((x_hat_pre - df$Life.expectancy)^2)]
+mse <- mean((x_hat_pre - df$Life.expectancy)^2)
 mse
