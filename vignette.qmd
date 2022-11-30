@@ -1,0 +1,20 @@
+---
+title: "Linear Regression"
+editor: visual
+code-copy: true
+execute:
+  message: false
+  warning: false
+  echo: true
+  cache: true
+---
+
+In class you saw how to fit a logistic regression model using `glm()` and some basic classification accuracy measures.
+
+**Objectives**
+In this vignette, you will learn how to implement:
+- Linear Regression
+- Ridge Regression
+- LASSO Regression
+- Elastic Net Regression
+  
