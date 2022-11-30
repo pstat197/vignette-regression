@@ -1,14 +1,16 @@
-+---
-title: "Vignette: Penalized Regression"
+---
+title: "Vignette: Penalized"
 format: html
 editor: visual
 ---
 
-## Quarto
+## Data Science Vignette: Penalized Regression Techniques
 
-Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+#### Aleksander Cichosz, Anni Li, Brian Che, Justin Vo, Noa Rapoport
 
-## Running Code
+A vignette on implementing penalized regression models using life expectancy data as a class project for PSTAT197A in Fall 2022.
+
+## Introduction
 
 When you click the **Render** button a document will be generated that includes both content and the output of embedded code. You can embed code like this:
 
@@ -24,3 +26,35 @@ You can add options to executable code like this
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).
+
+## Exploratory Data Analysis
+
+```{r}
+
+```
+
+## Simple Regression
+
+```{r}
+
+```
+
+## Elastic Net Regression
+
+```{r}
+
+```
+
+## Lasso Regression
+
+```{r}
+
+```
+
+## Ridge Regression
+
+```{r}
+
+```
+
+## Conclusion
