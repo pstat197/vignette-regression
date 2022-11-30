@@ -53,7 +53,7 @@ test_y <- testing(partitions) %>%
 # examine
 lambdas <- 10^seq(2, -3, by = -.1)
 
-# Perform cross validaton to find best value of lambda
+# Perform cross validation to find best value of lambda
 lasso_reg <- cv.glmnet(train_x, train_y, alpha = 1, lambda = lambdas)
 
 # Best lambda value
@@ -70,7 +70,7 @@ predictions_test <- predict(lasso_model, s = best_lambda, newx = test_x)
 eval_results(test_y, predictions_test, testing(partitions))
 )
 
-
+summary(lasso_reg)
 
 
 
