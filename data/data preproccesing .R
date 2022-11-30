@@ -12,7 +12,9 @@ life_data %>%
 # There are 193 countries, and I assume each country has 16 entries
 
 life_data <- life_data %>%
-  dummy_cols('Status',remove_first_dummy = TRUE, remove_selected_columns = TRUE)
+  dummy_cols('Status',remove_first_dummy = TRUE, remove_selected_columns = TRUE) %>%
+  select(-Country,-Year)
+
 
 
 life_clean <- life_data

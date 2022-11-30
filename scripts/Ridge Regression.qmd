@@ -1,0 +1,51 @@
+---
+title: "Ridge Regression"
+format: html
+editor: visual
+---
+
+## Ridge Regression
+
+Quarto enables you to weave together content and executable code into a finished document. To learn more about Quarto see <https://quarto.org>.
+
+## Background
+
+Ridge regression is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Mulicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+
+```{r}
+library(Matrix)
+library(glmnet)
+library(rsample)
+library(dplyr)
+
+```
+
+The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix
+
+```{r}
+# Set the seed
+set.seed(13)
+
+partion <- life_clean %>%  # Splittin the data into testing and training 
+  initial_split(prop = .8)
+traing <- training(partion)
+train_x <- as.matrix(traing$Life.expectancy) # transforming our Xs into a matrix
+traing <- traing %>%
+  select(-Life.expectancy) # removing our x
+train_y <- as.matrix(traing) # transforming our Ys into a matrix
+
+test <- testing(partion)
+test_x <- as.matrix(test$Life.expectancy) # transforming our Xs into a matrix
+test <- test %>%
+  select(-Life.expectancy) # removing our x
+test_y <- as.matrix(test) # transforming our Ys into a matrix
+
+```
+
+Lambda is our tuning parameter for ridge regression meaning we are going to try to find an optimal lambda, this is usually done through brute force.
+
+```{r}
+
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).
