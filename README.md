@@ -7,8 +7,13 @@ Aleksander Cichosz, Anni Li, Brian Che, Justin Vo, Noa Rapoport
 
 ## Vignette Abstract
 
+a brief description in a few sentences of your vignette topic, example data, and outcomes.
+
+
 ## Repository Contents
+
+an explanation of the directory structure of the repository
 
 ## Reference List
 
-## Test
+ 2 or more references to learn more about your topic.
