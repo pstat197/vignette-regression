@@ -12,7 +12,7 @@ execute:
 
 ## Introduction
 
-A vignette on implementing penalized regression models using life expectancy data as a class project for PSTAT197A in Fall 2022.
+Penalized regression is an alternative to the standard linear model that allows us to create a regression model that is penalized by adding a constraint in the equation. This allows us to reduce the coefficent values towards zero, allowing the less contributive variables to have a coefficient close or equal to zero.
 
 **Objectives**
 
@@ -23,6 +23,17 @@ In this vignette you'll learn how to implement:
 -   Elastic Net Regression
 
 **Prerequisites**
+
+Follow the action item below to get set up for the lab. You may need to install one or more packages if the `library()` calls return an error.
+
+::: callout-important
+## Action
+
+**Setup**
+
+1.  Create a new script to follow along for the vignette.
+2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
+:::
 
 ```{r, include = FALSE}
 # Set Up
@@ -79,6 +90,10 @@ rss <- sum((pred - test$Life.expectancy)^ 2)
 tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
 rsq <- 1 - rss/tss
 rsq # 0.8290421
+
+# Mean Squared Error
+test_mse <- mean((pred - test$Life.expectancy)^2)
+test_mse
 ```
 
 ## Ridge Regression
@@ -180,13 +195,17 @@ rss <- sum((pred - actual) ^ 2)
 tss <- sum((actual - mean(actual)) ^ 2)
 rsq <- 1 - rss/tss
 rsq # 0.8278766
+
+# Mean Squared Error
+test_mse <- mean((pred - actual)^2)
+test_mse
 ```
 
 #### Results
 
-The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.**
+The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.** The MSE for our test partition set is **12.995**, which is slightly higher than the the test MSE of the linear regression model.
 
-## Lasso Regression
+## LASSO Regression
 
 #### Background
 
