@@ -103,6 +103,10 @@ rss <- sum((pred - actual) ^ 2)
 tss <- sum((actual - mean(actual)) ^ 2)
 rsq <- 1 - rss/tss
 rsq # 0.8278766
+
+# Mean Squared Error
+test_mse <- mean((pred - actual)^2)
+test_mse
 ```
 
 ### Results
