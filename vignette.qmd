@@ -164,7 +164,7 @@ best_lambda <- ridge_cv$lambda.min
 best_lambda
 ```
 
-The optimal lambda value comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.
+The optimal lambda value, which produces the lowest test mean squared error (MSE), comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.
 
 ```{r}
 # extract the best model using K-cross validation
