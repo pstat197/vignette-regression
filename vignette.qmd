@@ -294,6 +294,7 @@ elastic_model <- train(Life.expectancy ~ .,
                        tuneLength = 25,
                        trControl = control)
 ```
+
 ```{r}
 # Model Prediction
 x_hat_pre <- predict(elastic_model, x)
