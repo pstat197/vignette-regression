@@ -44,6 +44,10 @@ library(modelr)
 library(rsample)
 library(yardstick)
 library(DataExplorer)
+library(Matrix)
+library(glmnet)
+library(rsample)
+library(dplyr)
 
 # read in csv file
 life_clean <- read.csv("data/life_clean.csv")
@@ -63,8 +67,6 @@ dim(life_clean)
 ```
 
 ```{r}
-# plots frequency of missing values for each feature
-plot_missing(life_clean)
 ```
 
 ## Simple Regression
@@ -75,9 +77,108 @@ plot_missing(life_clean)
 
 ## Ridge Regression
 
-```{r}
+#### Background
 
+Ridge regression, which is also referred to as l2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+
+```{r}
+# load libraries/packages
+library(tidyverse)
+library(tidymodels)
+library(modelr)
+library(rsample)
+library(yardstick)
+library(DataExplorer)
+library(Matrix)
+library(glmnet)
+library(rsample)
+library(dplyr)
+
+# read in csv file
+life_clean <- read.csv("data/life_clean.csv")
 ```
+
+The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix.
+
+```{r}
+# set seed
+set.seed(13)
+
+# partitioning data into training and test set
+partitions <- life_clean %>%
+  initial_split(prop = 0.8)
+
+# creating training set
+train <- training(partitions)
+
+train_x <- training(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+train_y <- training(partitions) %>%
+  pull(Life.expectancy)
+
+# creating test set
+test <- testing(partitions)
+
+test_x <- testing(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+test_y <- testing(partitions) %>%
+  pull(Life.expectancy)
+```
+
+Unlike linear regression, ridge regression is a regularized regression model that uses lambda as our tuning parameter, meaning we are going to try to find an optimal lambda as usually done by brute force.
+
+The *glmnet()* function trains the model multiple times for different values of lambda, passing them through its argument as a sequence of vector as mentioned before. Here, we use cross-validation to get the best model, which we do by using the *cv.glmnet()* function to automate the process of identify the optimal value of lambda that will result in a minimum error.
+
+```{r}
+# Setting the range of lambda values
+lambda_seq <- 10^seq(2, -3, by = -.1)
+
+# Using glmnet function to build the ridge regression in r
+fit <- glmnet(train_x, train_y, alpha = 0, lambda  = lambda_seq)
+
+# Checking the model
+summary(fit)
+
+# Using cross validation glmnet
+ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambdas)
+
+# Acquire best lambda value
+best_lambda <- ridge_cv$lambda.min
+best_lambda
+```
+
+The optimal lambda value comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.
+
+```{r}
+# extract the best model using K-cross validation
+best_fit <- ridge_cv$glmnet.fit
+
+# Rebuilding the model with optimal lambda value 0.01
+best_ridge <- glmnet(train_x, train_y, alpha = 0, lambda = 0.01)
+
+# Checking the coefficients
+coef(best_ridge)
+```
+
+We then compute the R\^2 value from the true and predicted values.
+
+```{r}
+# apply prediction model to test_x
+pred <- predict(best_ridge, s = best_lambda, newx = test_x)
+
+# use prediction function and R squared formula to compute R^2 value
+actual <- test_y
+rss <- sum((pred - actual) ^ 2)
+tss <- sum((actual - mean(actual)) ^ 2)
+rsq <- 1 - rss/tss
+rsq # 0.8278766
+```
+
+#### Results
+
+The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **83.56%**.
 
 ## Lasso Regression
 
