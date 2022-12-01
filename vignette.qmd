@@ -18,10 +18,9 @@ A vignette on implementing penalized regression models using life expectancy dat
 
 In this vignette you'll learn how to implement:
 
-- Ridge Regression
-- LASSO Regression
-- Elastic Net Regression
-
+-   Ridge Regression
+-   LASSO Regression
+-   Elastic Net Regression
 
 **Prerequisites**
 
