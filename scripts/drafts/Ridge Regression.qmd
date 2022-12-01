@@ -26,19 +26,21 @@ The package we will be working with for ridge regression is glmnet. There are so
 # Set the seed
 set.seed(13)
 
-partion <- life_clean %>%  # Splittin the data into testing and training 
+partition <- life_clean %>%  # Splittin the data into testing and training 
   initial_split(prop = .8)
-traing <- training(partion)
-train_x <- as.matrix(traing$Life.expectancy) # transforming our Xs into a matrix
-traing <- traing %>%
+training <- training(partition)
+train_x <- as.matrix(training$Life.expectancy) # transforming our Xs into a matrix
+training <- training %>%
   select(-Life.expectancy) # removing our x
-train_y <- as.matrix(traing) # transforming our Ys into a matrix
+train_y <- as.matrix(training) # transforming our Ys into a matrix
 
-test <- testing(partion)
+test <- testing(partition)
 test_x <- as.matrix(test$Life.expectancy) # transforming our Xs into a matrix
 test <- test %>%
   select(-Life.expectancy) # removing our x
 test_y <- as.matrix(test) # transforming our Ys into a matrix
+
+test_y
 
 ```
 
