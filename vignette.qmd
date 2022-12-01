@@ -86,10 +86,8 @@ base_reg <- lm(Life.expectancy ~ ., data = train)
 summary(base_reg)$r.squared
 pred <- predict(base_reg, newdata = test)
 
-rss <- sum((pred - test$Life.expectancy)^ 2)
-tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
-rsq <- 1 - rss/tss
-rsq # 0.8290421
+test_mse <- mean(pred - test$Life.expectancy)^2
+test_mse
 ```
 
 ## Ridge Regression
