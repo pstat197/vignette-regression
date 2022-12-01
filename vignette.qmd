@@ -24,17 +24,6 @@ In this vignette you'll learn how to implement:
 
 **Prerequisites**
 
-Follow the action item below to get set up for the lab. You may need to install one or more packages if the `library()` calls return an error.
-
-::: callout-important
-## Action
-
-**Setup**
-
-1.  Create a new script to follow along for the vignette.
-2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
-:::
-
 ```{r, include = FALSE}
 # Set Up
 # load packages
