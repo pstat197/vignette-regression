@@ -8,7 +8,7 @@ editor: visual
 
 ## Background
 
-LASSO (Least Absolute Shrinkage and Selection Operator) regression is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Mulicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero, or produces sparse models. Thus, LASSO performs variable selection. This can be useful when there is strong correlations between two or more predictor variables, known as multicollinearity, which creates redundant and skewed information in a regression model.
 
 ```{r}
 library(dplyr)

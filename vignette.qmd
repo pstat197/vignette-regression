@@ -1,16 +1,49 @@
 ---
-title: "Vignette: Penalized"
+title: "Vignette: Penalized Regression Techniques"
+author: Aleksander Cichosz, Anni Li, Brian Che, Justin Vo, Noa Rapoport
 format: html
 editor: visual
+execute:
+  message: false
+  warning: false
+  echo: true
+  cache: true
 ---
 
-## Data Science Vignette: Penalized Regression Techniques
-
-#### Aleksander Cichosz, Anni Li, Brian Che, Justin Vo, Noa Rapoport
+## Introduction
 
 A vignette on implementing penalized regression models using life expectancy data as a class project for PSTAT197A in Fall 2022.
 
-## Introduction
+**Objectives**
+
+In this vignette you'll learn how to implement:
+
+- Elastic Net Regression
+- LASSO Regression
+- Ridge Regression
+
+
+**Prerequisites**
+
+Follow the action item below to get set up for the lab. You may need to install one or more packages if the `library()` calls return an error.
+
+::: callout-important
+## Action
+
+**Setup**
+
+1.  Create a new script for this lab in your labs directory.
+2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
+:::
+
+```{r, include = FALSE}
+# load packages
+library(tidyverse)
+library(tidymodels)
+library(modelr)
+library(rsample)
+library(yardstick)
+```
 
 ### About Our Dataset: Life Expectancy (WHO)
 
@@ -19,7 +52,6 @@ When you click the **Render** button a document will be generated that includes 
 ```{r}
 1 + 1
 ```
-
 You can add options to executable code like this
 
 ```{r}
