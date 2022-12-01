@@ -58,6 +58,8 @@ life_clean <- read.csv("data/life_clean.csv")
 
 ## Exploratory Data Analysis
 
+For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, and others, versus the life expectancy based on these factors.
+
 ```{r}
 # view first few rows of dataset
 head(life_clean)
