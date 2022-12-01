@@ -72,7 +72,21 @@ dim(life_clean)
 ## Simple Regression
 
 ```{r}
+set.seed(13)
+# We will use a simple linear regression as our basis for comparing all other models
+# partitioning data into training and test set
+row.number <- sample(1:nrow(life_clean), 0.8*nrow(life_clean))
+train = life_clean[row.number,]
+test = life_clean[-row.number,]
 
+base_reg <- lm(Life.expectancy ~ ., data = train)
+summary(base_reg)$r.squared
+pred <- predict(base_reg, newdata = test)
+
+rss <- sum((pred - test$Life.expectancy)^ 2)
+tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
+rsq <- 1 - rss/tss
+rsq # 0.8290421
 ```
 
 ## Ridge Regression
@@ -178,7 +192,7 @@ rsq # 0.8278766
 
 #### Results
 
-The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **83.56%**.
+The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.**
 
 ## Lasso Regression
 
