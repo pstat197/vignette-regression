@@ -36,12 +36,17 @@ Follow the action item below to get set up for the lab. You may need to install 
 :::
 
 ```{r, include = FALSE}
+# Set Up
 # load packages
 library(tidyverse)
 library(tidymodels)
 library(modelr)
 library(rsample)
 library(yardstick)
+library(DataExplorer)
+
+# read in csv file
+life_clean <- read.csv("data/life_clean.csv")
 ```
 
 **About Our Dataset: Life Expectancy (WHO)**
@@ -49,7 +54,17 @@ library(yardstick)
 ## Exploratory Data Analysis
 
 ```{r}
+# view first few rows of dataset
+head(life_clean)
 
+# dimensions of dataset: 2938 rows x 20 columns
+dim(life_clean)
+
+```
+
+```{r}
+# plots frequency of missing values for each feature
+plot_missing(life_clean)
 ```
 
 ## Simple Regression
