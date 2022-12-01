@@ -12,7 +12,7 @@ execute:
 
 ## Introduction
 
-Penalized regression is an alternative to the standard linear model that allows us to create a regression model that is penalized by adding a constraint in the equation. This allows us to reduce the coefficent values towards zero, allowing the less contributive variables to have a coefficient close or equal to zero. 
+Penalized regression is an alternative to the standard linear model that allows us to create a regression model that is penalized by adding a constraint in the equation. This allows us to reduce the coefficent values towards zero, allowing the less contributive variables to have a coefficient close or equal to zero.
 
 **Objectives**
 
@@ -203,7 +203,7 @@ test_mse
 
 #### Results
 
-The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.** The MSE for our test partition set is **12.9954**, which is slightly higher than the the test MSE of the linear regression model.
+The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.** The MSE for our test partition set is **12.995**, which is slightly higher than the the test MSE of the linear regression model.
 
 ## LASSO Regression
 
