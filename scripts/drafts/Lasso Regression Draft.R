@@ -59,18 +59,18 @@ lasso_reg <- cv.glmnet(train_x, train_y, alpha = 1, lambda = lambdas)
 # Best lambda value
 best_lambda <- lasso_reg$lambda.min
 
-lasso_model <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
+lasso_model <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda)
 
-predictions_train <- predict(lasso_model, s = best_lambda, newx = train_x)
+pred_train <- predict(lasso_model, s = best_lambda, newx = train_x)
 
-eval_results(train_y, predictions_train, training(partitions))
+mean((pred_train-train_y)^2)
 
-predictions_test <- predict(lasso_model, s = best_lambda, newx = test_x)
+pred_test <- predict(lasso_model, s = best_lambda, newx = test_x)
 
-eval_results(test_y, predictions_test, testing(partitions))
-)
+mean((pred_test-test_y)^2)
 
-summary(lasso_reg)
+lasso.coef=predict(lasso_model,type="coefficients",s=best_lambda)
 
+lasso.coef
 
 
