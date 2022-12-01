@@ -162,6 +162,7 @@ Action
 </section>
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
+<p>For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one’s health such as country, vaccinations given in that said country, infant mortality rate in the country, and others, versus the life expectancy based on these factors.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-2_6e1841d1506303dd4cb46cedd34dac1b">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># view first few rows of dataset</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(life_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
@@ -315,7 +316,7 @@ nobs        1    -none-    numeric</code></pre>
 <pre><code>[1] 0.001</code></pre>
 </div>
 </div>
-<p>The optimal lambda value comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.</p>
+<p>The optimal lambda value, which produces the lowest test mean squared error (MSE), comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-8_554aeb99ea842928df949624e430c588">
 <div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># extract the best model using K-cross validation</span></span>
 <span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>best_fit <span class="ot">&lt;-</span> ridge_cv<span class="sc">$</span>glmnet.fit</span>
