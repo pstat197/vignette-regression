@@ -8,7 +8,7 @@ library(caret)
 life_clean <- read.csv("data/life_clean.csv")
 
 # remove some categorical variables
-df <- life_clean
+df <- life_clean %>% na.omit()
 x <- df %>% select(-c(Life.expectancy))
 
 # Model Building : Elastic Net Regression
