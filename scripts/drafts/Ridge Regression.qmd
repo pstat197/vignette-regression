@@ -28,26 +28,62 @@ set.seed(13)
 
 partition <- life_clean %>%  # Splittin the data into testing and training 
   initial_split(prop = .8)
-training <- training(partition)
-train_x <- as.matrix(training$Life.expectancy) # transforming our Xs into a matrix
-training <- training %>%
-  select(-Life.expectancy) # removing our x
-train_y <- as.matrix(training) # transforming our Ys into a matrix
 
-test <- testing(partition)
-test_x <- as.matrix(test$Life.expectancy) # transforming our Xs into a matrix
-test <- test %>%
-  select(-Life.expectancy) # removing our x
-test_y <- as.matrix(test) # transforming our Ys into a matrix
+# Training Set
+train_x <- training(partition) %>%
+  select(-Life.expectancy) %>%
+  as.matrix() # transforming our Xs into a matrix
+train_y <- training(partition) %>%
+  pull(Life.expectancy)
 
-test_y
+# Testing Set
+test_x <- testing(partition) %>%
+  select(-Life.expectancy) %>%
+  as.matrix() # transforming our Xs into a matrix
+test_y <- testing(partition) %>%
+  pull(Life.expectancy)
+
+
 
 ```
 
-Lambda is our tuning parameter for ridge regression meaning we are going to try to find an optimal lambda, this is usually done through brute force.
+Lambda is our tuning parameter for ridge regression meaning we are going to try to find an optimal lambda. Luckily glmnet has a cross validation feature, which will compare lambdas for us and find the one that minimizes the error term.
 
 ```{r}
+lambdas = 10^seq(2, -3, by = -.1)
+cv_ridge_reg = cv.glmnet(train_x,
+                         train_y, 
+                         alpha = 0, 
+                         lambda = lambdas,
+                         type.measure = "deviance")
+optimal_lambda <- cv_ridge_reg$lambda.min
+optimal_lambda
+```
 
+The next step is too look at our model performance now that we have selected an optimal lambda.
+
+```{r}
+# Compute R^2 from true and predicted values
+eval_results <- function(true, predicted, df) {
+  SSE <- sum((predicted - true)^2)
+  SST <- sum((true - mean(true))^2)
+  R_square <- 1 - SSE / SST
+  RMSE = sqrt(SSE/nrow(df))
+
+# Performance metrics
+data.frame(
+  RMSE = RMSE,
+  Rsquare = R_square
+)
+}
+
+# Prediction and evaluation on train data
+predictions_train <- predict(cv_ridge_reg, s = optimal_lambda, newx = train_x)
+eval_results(train_y, predictions_train, training(partition))
+
+# Prediction and evaluation on test data
+predictions_test <- predict(cv_ridge_reg, s = optimal_lambda, newx = test_x)
+eval_results(test_y, predictions_test, testing(partition))
 ```
 
 The `echo: false` option disables the printing of code (only output is displayed).

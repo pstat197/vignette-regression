@@ -17,5 +17,5 @@ life_data <- life_data %>%
 
 
 
-life_clean <- life_data
+life_clean <- na.omit(life_data)
 write_csv(life_clean,"data/life_clean.csv")

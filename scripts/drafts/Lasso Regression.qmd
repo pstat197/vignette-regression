@@ -22,7 +22,7 @@ The package we will be working with for LASSO regression is glmnet. There are so
 
 ```{r}
 # for reproducibility
-set.seed(12)
+set.seed(13)
 
 # partition data
 partitions <- life_clean %>%
