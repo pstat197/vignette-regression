@@ -18,7 +18,7 @@ library(tidyverse)
 library(tidymodels)
 ```
 
-The package we will be working with for LASSO regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector and the predictor variables will have to be in matrix form
+The package we will be working with for LASSO regression is the same as ridge regression, glmnet.
 
 ```{r}
 # for reproducibility
@@ -64,3 +64,19 @@ We now fit the model by specifying the optimal lambda, and alpha = 1 which corre
 ```{r}
 lasso_model <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
 ```
+
+We will now apply the model to the test set to come up with a set of test predictions.
+
+```{r}
+pred_test <- predict(lasso_model, s = best_lambda, newx = test_x)
+```
+
+Using these predicted test values and actual test values, we will compute the test MSE to see how our model performed.
+
+```{r}
+mean((pred_test-test_y)^2)
+```
+
+#### Results
+
+The Test MSE for the LASSO model is 11.94086, in comparison to the Test MSE of the base linear model which is ...
