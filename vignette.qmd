@@ -45,7 +45,7 @@ library(rsample)
 library(yardstick)
 ```
 
-### About Our Dataset: Life Expectancy (WHO)
+**About Our Dataset: Life Expectancy (WHO)**
 
 ## Exploratory Data Analysis
 
