@@ -24,17 +24,6 @@ In this vignette you'll learn how to implement:
 
 **Prerequisites**
 
-Follow the action item below to get set up for the lab. You may need to install one or more packages if the `library()` calls return an error.
-
-::: callout-important
-## Action
-
-**Setup**
-
-1.  Create a new script to follow along for the vignette.
-2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
-:::
-
 ```{r, include = FALSE}
 # Set Up
 # load packages
@@ -44,6 +33,11 @@ library(modelr)
 library(rsample)
 library(yardstick)
 library(DataExplorer)
+library(Matrix)
+library(glmnet)
+library(rsample)
+library(dplyr)
+library(caret)
 
 # read in csv file
 life_clean <- read.csv("data/life_clean.csv")
@@ -53,42 +47,256 @@ life_clean <- read.csv("data/life_clean.csv")
 
 ## Exploratory Data Analysis
 
+For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, and others, versus the life expectancy based on these factors.
+
 ```{r}
 # view first few rows of dataset
 head(life_clean)
 
-# dimensions of dataset: 2938 rows x 20 columns
+# dimensions of dataset: 1649 rows x 20 columns
 dim(life_clean)
 
 ```
 
 ```{r}
-# plots frequency of missing values for each feature
-plot_missing(life_clean)
 ```
 
 ## Simple Regression
 
 ```{r}
+set.seed(13)
+# We will use a simple linear regression as our basis for comparing all other models
+# partitioning data into training and test set
+row.number <- sample(1:nrow(life_clean), 0.8*nrow(life_clean))
+train = life_clean[row.number,]
+test = life_clean[-row.number,]
 
+base_reg <- lm(Life.expectancy ~ ., data = train)
+summary(base_reg)$r.squared
+pred <- predict(base_reg, newdata = test)
+
+rss <- sum((pred - test$Life.expectancy)^ 2)
+tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
+rsq <- 1 - rss/tss
+rsq # 0.8290421
 ```
 
 ## Ridge Regression
 
-```{r}
+#### Background
 
+Ridge regression, which is also referred to as l2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+
+```{r}
+# load libraries/packages
+library(tidyverse)
+library(tidymodels)
+library(modelr)
+library(rsample)
+library(yardstick)
+library(DataExplorer)
+library(Matrix)
+library(glmnet)
+library(rsample)
+library(dplyr)
+
+# read in csv file
+life_clean <- read.csv("data/life_clean.csv")
 ```
+
+The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix.
+
+```{r}
+# set seed
+set.seed(13)
+
+# partitioning data into training and test set
+partitions <- life_clean %>%
+  initial_split(prop = 0.8)
+
+# creating training set
+train <- training(partitions)
+
+train_x <- training(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+train_y <- training(partitions) %>%
+  pull(Life.expectancy)
+
+# creating test set
+test <- testing(partitions)
+
+test_x <- testing(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+test_y <- testing(partitions) %>%
+  pull(Life.expectancy)
+```
+
+Unlike linear regression, ridge regression is a regularized regression model that uses lambda as our tuning parameter, meaning we are going to try to find an optimal lambda as usually done by brute force.
+
+The *glmnet()* function trains the model multiple times for different values of lambda, passing them through its argument as a sequence of vector as mentioned before. Here, we use cross-validation to get the best model, which we do by using the *cv.glmnet()* function to automate the process of identify the optimal value of lambda that will result in a minimum error.
+
+```{r}
+# Setting the range of lambda values
+lambda_seq <- 10^seq(2, -3, by = -.1)
+
+# Using glmnet function to build the ridge regression in r
+fit <- glmnet(train_x, train_y, alpha = 0, lambda  = lambda_seq)
+
+# Checking the model
+summary(fit)
+
+# Using cross validation glmnet
+ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambda_seq)
+
+# Acquire best lambda value
+best_lambda <- ridge_cv$lambda.min
+best_lambda
+```
+
+The optimal lambda value, which produces the lowest test mean squared error (MSE), comes out to be 0.01 and will be used to build the ridge regression model for which we pass it through the lambda value.
+
+```{r}
+# extract the best model using K-cross validation
+best_fit <- ridge_cv$glmnet.fit
+
+# Rebuilding the model with optimal lambda value 0.01
+best_ridge <- glmnet(train_x, train_y, alpha = 0, lambda = 0.01)
+
+# Checking the coefficients
+coef(best_ridge)
+```
+
+We then compute the R\^2 value from the true and predicted values.
+
+```{r}
+# apply prediction model to test_x
+pred <- predict(best_ridge, s = best_lambda, newx = test_x)
+
+# use prediction function and R squared formula to compute R^2 value
+actual <- test_y
+rss <- sum((pred - actual) ^ 2)
+tss <- sum((actual - mean(actual)) ^ 2)
+rsq <- 1 - rss/tss
+rsq # 0.8278766
+```
+
+#### Results
+
+The R-squared value for the ridge regression model on the testing data outputs to be **82.79%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.**
 
 ## Lasso Regression
 
+#### Background
+
+LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero, or produces sparse models. Thus, LASSO performs variable selection. This is well suited for when there is strong correlations between two or more predictor variables, known as multicollinearity, which creates redundant and skewed information in a regression model.
+
 ```{r}
+library(dplyr)
+library(glmnet)
+library(caret)
+library(tidyverse)
+library(tidymodels)
+```
+
+The package we will be working with for LASSO regression is the same as ridge regression, glmnet.
+
+```{r}
+# for reproducibility
+set.seed(13)
+
+# partition data
+partitions <- life_clean %>%
+  initial_split(prop = 0.8)
+
+# Training Set
+train_x <- training(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+train_y <- training(partitions) %>%
+  pull(Life.expectancy)
+
+# Testing Set
+test_x <- testing(partitions) %>%
+  select(-Life.expectancy) %>%
+  as.matrix()
+test_y <- testing(partitions) %>%
+  pull(Life.expectancy)
 
 ```
 
-## Elastic Net Regression
+Lambda is our tuning parameter for LASSO regression. We will find the optimal lambda value through cross validation.
 
 ```{r}
+# lambda values we will choose from
+lambdas <- 10^seq(2, -3, by = -.1)
 
+# Perform cross validation to find best value of lambda
+lasso_reg <- cv.glmnet(train_x, train_y, alpha = 1, lambda = lambdas)
+
+# Best lambda value
+best_lambda <- lasso_reg$lambda.min
+
+best_lambda
+```
+
+We now fit the model by specifying the optimal lambda, and alpha = 1 which corresponds to LASSO regression.
+
+```{r}
+lasso_model <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
+```
+
+We will now apply the model to the test set to come up with a set of test predictions.
+
+```{r}
+pred_test <- predict(lasso_model, s = best_lambda, newx = test_x)
+```
+
+Using these predicted test values and actual test values, we will compute the test MSE to see how our model performed.
+
+```{r}
+mean((pred_test-test_y)^2)
+```
+
+#### Results
+
+The Test MSE for the LASSO model is 11.94086, in comparison to the Test MSE of the base linear model which is ...
+
+## Elastic Net Regression
+
+```{r, results='hide'}
+# remove some categorical variables
+df <- life_clean
+x <- df %>% select(-c(Life.expectancy))
+
+# Model Building : Elastic Net Regression
+control <- trainControl(method = "repeatedcv",
+                        number = 5,
+                        repeats = 5,
+                        search = "random",
+                        verboseIter = TRUE)
+
+# Training ELastic Net Regression model
+elastic_model <- train(Life.expectancy ~ .,
+                       data = df,
+                       method = "glmnet",
+                       preProcess = c("center", "scale"),
+                       tuneLength = 25,
+                       trControl = control)
+```
+
+```{r}
+# Model Prediction
+x_hat_pre <- predict(elastic_model, x)
+
+# Multiple R-squared
+rsq <- cor(df$Life.expectancy, x_hat_pre)^2
+rsq
+
+# Mean Squared Error
+mse <- mean((x_hat_pre - df$Life.expectancy)^2)
+mse
 ```
 
 ## Conclusion
