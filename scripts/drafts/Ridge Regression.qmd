@@ -107,4 +107,4 @@ rsq # 0.8278766
 
 ### Results
 
-The R-squared value for the ridge regression model on the testing data outputs to be 82.79%, which is a slight decrease in performance compared with the linear regression model at a R-squared v alue of 83.56%.
+The R-squared value for the ridge regression model on the testing data outputs to be 82.79%, which is a slight decrease in performance compared with the linear regression model at a R-squared value of 82op%.
