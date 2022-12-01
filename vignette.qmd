@@ -67,8 +67,6 @@ dim(life_clean)
 ```
 
 ```{r}
-# plots frequency of missing values for each feature
-plot_missing(life_clean)
 ```
 
 ## Simple Regression
