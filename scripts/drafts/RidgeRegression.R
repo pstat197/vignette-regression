@@ -60,7 +60,7 @@ fit <- glmnet(train_x, train_y, alpha = 0, lambda  = lambda_seq)
 summary(fit)
 
 # Using cross validation glmnet
-ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambdas)
+ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambda_seq)
 
 # Acquire best lambda value
 best_lambda <- ridge_cv$lambda.min

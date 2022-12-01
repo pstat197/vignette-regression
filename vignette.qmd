@@ -62,7 +62,7 @@ life_clean <- read.csv("data/life_clean.csv")
 # view first few rows of dataset
 head(life_clean)
 
-# dimensions of dataset: 2938 rows x 20 columns
+# dimensions of dataset: 1649 rows x 20 columns
 dim(life_clean)
 
 ```
@@ -157,7 +157,7 @@ fit <- glmnet(train_x, train_y, alpha = 0, lambda  = lambda_seq)
 summary(fit)
 
 # Using cross validation glmnet
-ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambdas)
+ridge_cv <- cv.glmnet(train_x, train_y, alpha = 0, lambda = lambda_seq)
 
 # Acquire best lambda value
 best_lambda <- ridge_cv$lambda.min
@@ -274,8 +274,37 @@ The Test MSE for the LASSO model is 11.94086, in comparison to the Test MSE of t
 
 ## Elastic Net Regression
 
-```{r}
+```{r, results='hide'}
+# remove some categorical variables
+df <- life_clean
+x <- df %>% select(-c(Life.expectancy))
 
+# Model Building : Elastic Net Regression
+control <- trainControl(method = "repeatedcv",
+                        number = 5,
+                        repeats = 5,
+                        search = "random",
+                        verboseIter = TRUE)
+
+# Training ELastic Net Regression model
+elastic_model <- train(Life.expectancy ~ .,
+                       data = df,
+                       method = "glmnet",
+                       preProcess = c("center", "scale"),
+                       tuneLength = 25,
+                       trControl = control)
+```
+```{r}
+# Model Prediction
+x_hat_pre <- predict(elastic_model, x)
+
+# Multiple R-squared
+rsq <- cor(df$Life.expectancy, x_hat_pre)^2
+rsq
+
+# Mean Squared Error
+mse <- mean((x_hat_pre - df$Life.expectancy)^2)
+mse
 ```
 
 ## Conclusion
