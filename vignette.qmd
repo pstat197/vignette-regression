@@ -18,9 +18,9 @@ A vignette on implementing penalized regression models using life expectancy dat
 
 In this vignette you'll learn how to implement:
 
-- Elastic Net Regression
-- LASSO Regression
 - Ridge Regression
+- LASSO Regression
+- Elastic Net Regression
 
 
 **Prerequisites**
@@ -32,7 +32,7 @@ Follow the action item below to get set up for the lab. You may need to install 
 
 **Setup**
 
-1.  Create a new script for this lab in your labs directory.
+1.  Create a new script to follow along for the vignette.
 2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
 :::
 
@@ -73,7 +73,7 @@ The `echo: false` option disables the printing of code (only output is displayed
 
 ```
 
-## Elastic Net Regression
+## Ridge Regression
 
 ```{r}
 
@@ -85,7 +85,7 @@ The `echo: false` option disables the printing of code (only output is displayed
 
 ```
 
-## Ridge Regression
+## Elastic Net Regression
 
 ```{r}
 
