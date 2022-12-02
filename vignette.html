@@ -98,6 +98,7 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <link href="vignette_files/libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
 <link href="vignette_files/libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
 
 </head>
 
@@ -139,33 +140,35 @@ code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warni
 <li>LASSO Regression</li>
 <li>Elastic Net Regression</li>
 </ul>
-<p><strong>Prerequisites</strong></p>
-<p>Follow the action item below to get set up for the lab. You may need to install one or more packages if the <code>library()</code> calls return an error.</p>
-<div class="callout-important callout callout-style-default callout-captioned">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-caption-container flex-fill">
-Action
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p><strong>Setup</strong></p>
-<ol type="1">
-<li>Create a new script to follow along for the vignette.</li>
-<li>Copy-paste the code chunk below at the top of your script to load required packages and data.</li>
-</ol>
-</div>
+<p><strong>Setup</strong><br>
+First, we need to load all the required packages and import the data</p>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-1_f707e2ada229e7a4c2ae1184fbaa09b8">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load packages</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(yardstick)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matrix)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(caret)</span>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># read data</span></span>
+<span id="cb1-15"><a href="#cb1-15" aria-hidden="true" tabindex="-1"></a>url  <span class="ot">&lt;-</span> <span class="st">'https://raw.githubusercontent.com/pstat197/vignette-regression/main/data/life_clean.csv'</span></span>
+<span id="cb1-16"><a href="#cb1-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>life_clean <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(url)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p><strong>About Our Dataset: Life Expectancy (WHO)</strong></p>
 </section>
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
 <p>For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one’s health such as country, vaccinations given in that said country, infant mortality rate in the country, and others, versus the life expectancy based on these factors.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-2_6e1841d1506303dd4cb46cedd34dac1b">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># view first few rows of dataset</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(life_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-2_baf577d390f9a57b24455045baa86621">
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># view first few rows of dataset</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(life_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>  Life.expectancy Adult.Mortality infant.deaths Alcohol percentage.expenditure
 1            65.0             263            62    0.01              71.279624
@@ -196,95 +199,79 @@ Action
 5                           0.454       9.5                 1
 6                           0.448       9.2                 1</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dimensions of dataset: 1649 rows x 20 columns</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(life_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># dimensions of dataset: 1649 rows x 20 columns</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(life_clean)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 1649   20</code></pre>
 </div>
 </div>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-3_1e128543c95ee9ee9146aa23da4bf9e6">
-
+</section>
+<section id="data-partitioning" class="level2">
+<h2 class="anchored" data-anchor-id="data-partitioning">Data Partitioning</h2>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-3_7cb2d83a32d4c77684edae3ae55f94ae">
+<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># for consistency across linear, ridge-regression, and LASSO</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a><span class="co"># partitioning data into training and test set</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>partitions <span class="ot">&lt;-</span> life_clean <span class="sc">%&gt;%</span></span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a><span class="co"># creating training set</span></span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(partitions)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co"># creating test set</span></span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(partitions)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="simple-regression" class="level2">
-<h2 class="anchored" data-anchor-id="simple-regression">Simple Regression</h2>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-4_7ba697dd06adc80392df4480eb241134">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We will use a simple linear regression as our basis for comparing all other models</span></span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># partitioning data into training and test set</span></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>row.number <span class="ot">&lt;-</span> <span class="fu">sample</span>(<span class="dv">1</span><span class="sc">:</span><span class="fu">nrow</span>(life_clean), <span class="fl">0.8</span><span class="sc">*</span><span class="fu">nrow</span>(life_clean))</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>train <span class="ot">=</span> life_clean[row.number,]</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>test <span class="ot">=</span> life_clean[<span class="sc">-</span>row.number,]</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>base_reg <span class="ot">&lt;-</span> <span class="fu">lm</span>(Life.expectancy <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(base_reg)<span class="sc">$</span>r.squared</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 0.8365472</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(base_reg, <span class="at">newdata =</span> test)</span>
+<section id="simple-linear-regression" class="level2">
+<h2 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h2>
+<p>We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the dataset.</p>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-4_199c760b3b126c43bedc59200ae5d190">
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>lin_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Life.expectancy <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>rss <span class="ot">&lt;-</span> <span class="fu">sum</span>((pred <span class="sc">-</span> test<span class="sc">$</span>Life.expectancy)<span class="sc">^</span> <span class="dv">2</span>)</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>tss <span class="ot">&lt;-</span> <span class="fu">sum</span>((test<span class="sc">$</span>Life.expectancy <span class="sc">-</span> <span class="fu">mean</span>(test<span class="sc">$</span>Life.expectancy)) <span class="sc">^</span> <span class="dv">2</span>)</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> rss<span class="sc">/</span>tss</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>rsq <span class="co"># 0.8290421</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>pred_lin <span class="ot">&lt;-</span> <span class="fu">predict</span>(lin_mod, <span class="at">newdata =</span> test)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>To evaluate the model performance, we will look at the <span class="math inline">\(R^2\)</span> and the Test Mean Squared Error (MSE).</p>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-5_066c2b4e1e69f492c36e1153c0a6f4bb">
+<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>rss <span class="ot">&lt;-</span> <span class="fu">sum</span>((pred_lin <span class="sc">-</span> test<span class="sc">$</span>Life.expectancy)<span class="sc">^</span> <span class="dv">2</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>tss <span class="ot">&lt;-</span> <span class="fu">sum</span>((test<span class="sc">$</span>Life.expectancy <span class="sc">-</span> <span class="fu">mean</span>(test<span class="sc">$</span>Life.expectancy)) <span class="sc">^</span> <span class="dv">2</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> rss<span class="sc">/</span>tss</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>rsq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8290421</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean Squared Error</span></span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>test_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((pred <span class="sc">-</span> test<span class="sc">$</span>Life.expectancy)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>test_mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean Squared Error</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>test_mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((pred_lin <span class="sc">-</span> test<span class="sc">$</span>Life.expectancy)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>test_mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 12.90741</code></pre>
 </div>
 </div>
+<section id="results" class="level4">
+<h4 class="anchored" data-anchor-id="results">Results</h4>
+<p>Here, we see that our base linear regression model has a <span class="math inline">\(R^2\)</span> value of 0.829 and a test MSE of 12.907. We will use these as a basis for comparing the performance of the penalized regression models.</p>
+</section>
 </section>
 <section id="ridge-regression" class="level2">
 <h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
 <section id="background" class="level4">
 <h4 class="anchored" data-anchor-id="background">Background</h4>
-<p>Ridge regression, which is also referred to as l2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-5_ece6a6fbd6ca54b0a5f4be2b6f4a4597">
-<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># load libraries/packages</span></span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidymodels)</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(modelr)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
-<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(yardstick)</span>
-<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(DataExplorer)</span>
-<span id="cb11-8"><a href="#cb11-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(Matrix)</span>
-<span id="cb11-9"><a href="#cb11-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(glmnet)</span>
-<span id="cb11-10"><a href="#cb11-10" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(rsample)</span>
-<span id="cb11-11"><a href="#cb11-11" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
-<span id="cb11-12"><a href="#cb11-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb11-13"><a href="#cb11-13" aria-hidden="true" tabindex="-1"></a><span class="co"># read in csv file</span></span>
-<span id="cb11-14"><a href="#cb11-14" aria-hidden="true" tabindex="-1"></a>life_clean <span class="ot">&lt;-</span> <span class="fu">read.csv</span>(<span class="st">"data/life_clean.csv"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<p>The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-6_86ffb35bd01736346bbfc7daa68644e7">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># set seed</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">13</span>)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="co"># partitioning data into training and test set</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>partitions <span class="ot">&lt;-</span> life_clean <span class="sc">%&gt;%</span></span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">initial_split</span>(<span class="at">prop =</span> <span class="fl">0.8</span>)</span>
+<p>Ridge regression, which is also referred to as L2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.</p>
+<p>The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix. We will reformat the training and testing set objects we created earlier to achieve this.</p>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-6_c1efb77edc2cda5e434c12135ff14891">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># cr</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>train_x <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Life.expectancy) <span class="sc">%&gt;%</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>train_y <span class="ot">&lt;-</span> train <span class="sc">%&gt;%</span></span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(Life.expectancy)</span>
 <span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># creating training set</span></span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>train <span class="ot">&lt;-</span> <span class="fu">training</span>(partitions)</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>train_x <span class="ot">&lt;-</span> <span class="fu">training</span>(partitions) <span class="sc">%&gt;%</span></span>
-<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Life.expectancy) <span class="sc">%&gt;%</span></span>
-<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>train_y <span class="ot">&lt;-</span> <span class="fu">training</span>(partitions) <span class="sc">%&gt;%</span></span>
-<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(Life.expectancy)</span>
-<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a><span class="co"># creating test set</span></span>
-<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>test <span class="ot">&lt;-</span> <span class="fu">testing</span>(partitions)</span>
-<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>test_x <span class="ot">&lt;-</span> <span class="fu">testing</span>(partitions) <span class="sc">%&gt;%</span></span>
-<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Life.expectancy) <span class="sc">%&gt;%</span></span>
-<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
-<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>test_y <span class="ot">&lt;-</span> <span class="fu">testing</span>(partitions) <span class="sc">%&gt;%</span></span>
-<span id="cb12-24"><a href="#cb12-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(Life.expectancy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a><span class="co"># creating test set</span></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>test_x <span class="ot">&lt;-</span> test <span class="sc">%&gt;%</span></span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="sc">-</span>Life.expectancy) <span class="sc">%&gt;%</span></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">as.matrix</span>()</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>test_y <span class="ot">&lt;-</span> test <span class="sc">%&gt;%</span></span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(Life.expectancy)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Unlike linear regression, ridge regression is a regularized regression model that uses lambda as our tuning parameter, meaning we are going to try to find an optimal lambda as usually done by brute force.</p>
 <p>The <em>glmnet()</em> function trains the model multiple times for different values of lambda, passing them through its argument as a sequence of vector as mentioned before. Here, we use cross-validation to get the best model, which we do by using the <em>cv.glmnet()</em> function to automate the process of identify the optimal value of lambda that will result in a minimum error.</p>
@@ -357,7 +344,7 @@ Schooling                        9.202271e-01
 Status_Developing               -9.547526e-01</code></pre>
 </div>
 </div>
-<p>We then compute the R^2 value from the true and predicted values.</p>
+<p>We then compute the <span class="math inline">\(R^2\)</span> value from the true and predicted values.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-9_8bd55ff0a8c36ce7930d9efb606617e7">
 <div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apply prediction model to test_x</span></span>
 <span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_ridge, <span class="at">s =</span> best_lambda, <span class="at">newx =</span> test_x)</span>
@@ -379,8 +366,8 @@ Status_Developing               -9.547526e-01</code></pre>
 </div>
 </div>
 </section>
-<section id="results" class="level4">
-<h4 class="anchored" data-anchor-id="results">Results</h4>
+<section id="results-1" class="level4">
+<h4 class="anchored" data-anchor-id="results-1">Results</h4>
 <p>The R-squared value for the ridge regression model on the testing data outputs to be <strong>82.79%</strong>, which is a <strong>slight decrease in performance</strong> compared with the linear regression model at a R-squared value of <strong>82.90%.</strong> The MSE for our test partition set is <strong>12.995</strong>, which is slightly higher than the the test MSE of the linear regression model.</p>
 </section>
 </section>
@@ -436,61 +423,70 @@ Status_Developing               -9.547526e-01</code></pre>
 </div>
 </div>
 <p>We now fit the model by specifying the optimal lambda, and alpha = 1 which corresponds to LASSO regression.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-13_a91c0bfcf2668ba73c89588a58a43046">
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lasso_model <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(train_x, train_y, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">lambda =</span> best_lambda, <span class="at">standardize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-13_942de5226f121223cde30af854edb22d">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>lasso_mod <span class="ot">&lt;-</span> <span class="fu">glmnet</span>(train_x, train_y, <span class="at">alpha =</span> <span class="dv">1</span>, <span class="at">lambda =</span> best_lambda, <span class="at">standardize =</span> <span class="cn">TRUE</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>We will now apply the model to the test set to come up with a set of test predictions.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-14_933c032d2f4287f9770bbf96c0b24795">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pred_test <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_model, <span class="at">s =</span> best_lambda, <span class="at">newx =</span> test_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-14_14e9b1919877846f5672b39fdbcdbe5c">
+<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>pred_lasso <span class="ot">&lt;-</span> <span class="fu">predict</span>(lasso_mod, <span class="at">s =</span> best_lambda, <span class="at">newx =</span> test_x)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Using these predicted test values and actual test values, we will compute the test MSE to see how our model performed.</p>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-15_4b1b35e493c05a759093ed016e3721f9">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">mean</span>((pred_test<span class="sc">-</span>test_y)<span class="sc">^</span><span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-15_767fc61b3dc8d9aed36cc73d222c0a7a">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a>actual <span class="ot">&lt;-</span> test_y</span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>rss <span class="ot">&lt;-</span> <span class="fu">sum</span>((pred_lasso <span class="sc">-</span> actual) <span class="sc">^</span> <span class="dv">2</span>)</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>tss <span class="ot">&lt;-</span> <span class="fu">sum</span>((actual <span class="sc">-</span> <span class="fu">mean</span>(actual)) <span class="sc">^</span> <span class="dv">2</span>)</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="dv">1</span> <span class="sc">-</span> rss<span class="sc">/</span>tss</span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a>rsq </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 12.91703</code></pre>
+<pre><code>[1] 0.8289147</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((pred<span class="sc">-</span>actual)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 12.9954</code></pre>
 </div>
 </div>
 </section>
-<section id="results-1" class="level4">
-<h4 class="anchored" data-anchor-id="results-1">Results</h4>
+<section id="results-2" class="level4">
+<h4 class="anchored" data-anchor-id="results-2">Results</h4>
 <p>The Test MSE for the LASSO model is 11.94086, in comparison to the Test MSE of the base linear model which is …</p>
 </section>
 </section>
 <section id="elastic-net-regression" class="level2">
 <h2 class="anchored" data-anchor-id="elastic-net-regression">Elastic Net Regression</h2>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-16_9708c104dd8eac306a1e1b4bbaaf6f72">
-<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove some categorical variables</span></span>
-<span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> life_clean</span>
-<span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(Life.expectancy))</span>
-<span id="cb31-4"><a href="#cb31-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-5"><a href="#cb31-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Model Building : Elastic Net Regression</span></span>
-<span id="cb31-6"><a href="#cb31-6" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"repeatedcv"</span>,</span>
-<span id="cb31-7"><a href="#cb31-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">number =</span> <span class="dv">5</span>,</span>
-<span id="cb31-8"><a href="#cb31-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">repeats =</span> <span class="dv">5</span>,</span>
-<span id="cb31-9"><a href="#cb31-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">search =</span> <span class="st">"random"</span>,</span>
-<span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">verboseIter =</span> <span class="cn">TRUE</span>)</span>
-<span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Training ELastic Net Regression model</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>elastic_model <span class="ot">&lt;-</span> <span class="fu">train</span>(Life.expectancy <span class="sc">~</span> .,</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> df,</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"glmnet"</span>,</span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"scale"</span>),</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">tuneLength =</span> <span class="dv">25</span>,</span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trControl =</span> control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove some categorical variables</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> life_clean</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(Life.expectancy))</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Model Building : Elastic Net Regression</span></span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>control <span class="ot">&lt;-</span> <span class="fu">trainControl</span>(<span class="at">method =</span> <span class="st">"repeatedcv"</span>,</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>                        <span class="at">number =</span> <span class="dv">5</span>,</span>
+<span id="cb33-8"><a href="#cb33-8" aria-hidden="true" tabindex="-1"></a>                        <span class="at">repeats =</span> <span class="dv">5</span>,</span>
+<span id="cb33-9"><a href="#cb33-9" aria-hidden="true" tabindex="-1"></a>                        <span class="at">search =</span> <span class="st">"random"</span>,</span>
+<span id="cb33-10"><a href="#cb33-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">verboseIter =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb33-11"><a href="#cb33-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb33-12"><a href="#cb33-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Training ELastic Net Regression model</span></span>
+<span id="cb33-13"><a href="#cb33-13" aria-hidden="true" tabindex="-1"></a>elastic_model <span class="ot">&lt;-</span> <span class="fu">train</span>(Life.expectancy <span class="sc">~</span> .,</span>
+<span id="cb33-14"><a href="#cb33-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> df,</span>
+<span id="cb33-15"><a href="#cb33-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"glmnet"</span>,</span>
+<span id="cb33-16"><a href="#cb33-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"scale"</span>),</span>
+<span id="cb33-17"><a href="#cb33-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">tuneLength =</span> <span class="dv">25</span>,</span>
+<span id="cb33-18"><a href="#cb33-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trControl =</span> control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-17_44b378f4470c748c34e973947f3bbfd6">
-<div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model Prediction</span></span>
-<span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>x_hat_pre <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_model, x)</span>
-<span id="cb32-3"><a href="#cb32-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb32-4"><a href="#cb32-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared</span></span>
-<span id="cb32-5"><a href="#cb32-5" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="fu">cor</span>(df<span class="sc">$</span>Life.expectancy, x_hat_pre)<span class="sc">^</span><span class="dv">2</span></span>
-<span id="cb32-6"><a href="#cb32-6" aria-hidden="true" tabindex="-1"></a>rsq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model Prediction</span></span>
+<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>x_hat_pre <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_model, x)</span>
+<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb34-4"><a href="#cb34-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Multiple R-squared</span></span>
+<span id="cb34-5"><a href="#cb34-5" aria-hidden="true" tabindex="-1"></a>rsq <span class="ot">&lt;-</span> <span class="fu">cor</span>(df<span class="sc">$</span>Life.expectancy, x_hat_pre)<span class="sc">^</span><span class="dv">2</span></span>
+<span id="cb34-6"><a href="#cb34-6" aria-hidden="true" tabindex="-1"></a>rsq</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 0.8349588</code></pre>
 </div>
-<div class="sourceCode cell-code" id="cb34"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean Squared Error</span></span>
-<span id="cb34-2"><a href="#cb34-2" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((x_hat_pre <span class="sc">-</span> df<span class="sc">$</span>Life.expectancy)<span class="sc">^</span><span class="dv">2</span>)</span>
-<span id="cb34-3"><a href="#cb34-3" aria-hidden="true" tabindex="-1"></a>mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb36"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Mean Squared Error</span></span>
+<span id="cb36-2"><a href="#cb36-2" aria-hidden="true" tabindex="-1"></a>mse <span class="ot">&lt;-</span> <span class="fu">mean</span>((x_hat_pre <span class="sc">-</span> df<span class="sc">$</span>Life.expectancy)<span class="sc">^</span><span class="dv">2</span>)</span>
+<span id="cb36-3"><a href="#cb36-3" aria-hidden="true" tabindex="-1"></a>mse</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
 <pre><code>[1] 12.76443</code></pre>
 </div>

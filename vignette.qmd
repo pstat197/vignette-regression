@@ -22,21 +22,10 @@ In this vignette you'll learn how to implement:
 -   LASSO Regression
 -   Elastic Net Regression
 
-**Prerequisites**
+**Setup**  
+First, we need to load all the required packages and import the data
 
-Follow the action item below to get set up for the lab. You may need to install one or more packages if the `library()` calls return an error.
-
-::: callout-important
-## Action
-
-**Setup**
-
-1.  Create a new script to follow along for the vignette.
-2.  Copy-paste the code chunk below at the top of your script to load required packages and data.
-:::
-
-```{r, include = FALSE}
-# Set Up
+```{r, echo = TRUE}
 # load packages
 library(tidyverse)
 library(tidymodels)
@@ -50,8 +39,10 @@ library(rsample)
 library(dplyr)
 library(caret)
 
-# read in csv file
-life_clean <- read.csv("data/life_clean.csv")
+# read data
+url  <- 'https://raw.githubusercontent.com/pstat197/vignette-regression/main/data/life_clean.csv'
+
+life_clean <- read.csv(url)
 ```
 
 **About Our Dataset: Life Expectancy (WHO)**
@@ -66,63 +57,12 @@ head(life_clean)
 
 # dimensions of dataset: 1649 rows x 20 columns
 dim(life_clean)
-
 ```
 
-```{r}
-```
-
-## Simple Regression
+## Data Partitioning
 
 ```{r}
-set.seed(13)
-# We will use a simple linear regression as our basis for comparing all other models
-# partitioning data into training and test set
-row.number <- sample(1:nrow(life_clean), 0.8*nrow(life_clean))
-train = life_clean[row.number,]
-test = life_clean[-row.number,]
-
-base_reg <- lm(Life.expectancy ~ ., data = train)
-summary(base_reg)$r.squared
-pred <- predict(base_reg, newdata = test)
-
-rss <- sum((pred - test$Life.expectancy)^ 2)
-tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
-rsq <- 1 - rss/tss
-rsq # 0.8290421
-
-# Mean Squared Error
-test_mse <- mean((pred - test$Life.expectancy)^2)
-test_mse
-```
-
-## Ridge Regression
-
-#### Background
-
-Ridge regression, which is also referred to as l2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
-
-```{r}
-# load libraries/packages
-library(tidyverse)
-library(tidymodels)
-library(modelr)
-library(rsample)
-library(yardstick)
-library(DataExplorer)
-library(Matrix)
-library(glmnet)
-library(rsample)
-library(dplyr)
-
-# read in csv file
-life_clean <- read.csv("data/life_clean.csv")
-```
-
-The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix.
-
-```{r}
-# set seed
+# for consistency across linear, ridge-regression, and LASSO
 set.seed(13)
 
 # partitioning data into training and test set
@@ -132,19 +72,56 @@ partitions <- life_clean %>%
 # creating training set
 train <- training(partitions)
 
-train_x <- training(partitions) %>%
+# creating test set
+test <- testing(partitions)
+```
+
+## Simple Linear Regression
+
+We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the dataset.
+
+```{r}
+lin_mod <- lm(Life.expectancy ~ ., data = train)
+
+pred_lin <- predict(lin_mod, newdata = test)
+```
+
+To evaluate the model performance, we will look at the $R^2$ and the Test Mean Squared Error (MSE).
+```{r}
+rss <- sum((pred_lin - test$Life.expectancy)^ 2)
+tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
+rsq <- 1 - rss/tss
+rsq
+
+# Mean Squared Error
+test_mse <- mean((pred_lin - test$Life.expectancy)^2)
+test_mse
+```
+
+#### Results
+Here, we see that our base linear regression model has a $R^2$ value of 0.829 and a test MSE of 12.907. We will use these as a basis for comparing the performance of the penalized regression models.
+
+## Ridge Regression
+
+#### Background
+
+Ridge regression, which is also referred to as L2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+
+The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix. We will reformat the training and testing set objects we created earlier to achieve this.
+
+```{r}
+# cr
+train_x <- train %>%
   select(-Life.expectancy) %>%
   as.matrix()
-train_y <- training(partitions) %>%
+train_y <- train %>%
   pull(Life.expectancy)
 
 # creating test set
-test <- testing(partitions)
-
-test_x <- testing(partitions) %>%
+test_x <- test %>%
   select(-Life.expectancy) %>%
   as.matrix()
-test_y <- testing(partitions) %>%
+test_y <- test %>%
   pull(Life.expectancy)
 ```
 
@@ -183,7 +160,7 @@ best_ridge <- glmnet(train_x, train_y, alpha = 0, lambda = 0.01)
 coef(best_ridge)
 ```
 
-We then compute the R\^2 value from the true and predicted values.
+We then compute the $R^2$ value from the true and predicted values.
 
 ```{r}
 # apply prediction model to test_x
@@ -263,19 +240,26 @@ best_lambda
 We now fit the model by specifying the optimal lambda, and alpha = 1 which corresponds to LASSO regression.
 
 ```{r}
-lasso_model <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
+lasso_mod <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
 ```
 
 We will now apply the model to the test set to come up with a set of test predictions.
 
 ```{r}
-pred_test <- predict(lasso_model, s = best_lambda, newx = test_x)
+pred_lasso <- predict(lasso_mod, s = best_lambda, newx = test_x)
 ```
 
 Using these predicted test values and actual test values, we will compute the test MSE to see how our model performed.
 
 ```{r}
-mean((pred_test-test_y)^2)
+actual <- test_y
+rss <- sum((pred_lasso - actual) ^ 2)
+tss <- sum((actual - mean(actual)) ^ 2)
+rsq <- 1 - rss/tss
+rsq 
+
+mse <- mean((pred-actual)^2)
+mse
 ```
 
 #### Results
