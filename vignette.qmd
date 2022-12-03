@@ -49,15 +49,7 @@ life_clean <- read.csv(url)
 
 ## Exploratory Data Analysis
 
-For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, and others, versus the life expectancy based on these factors.
-
-```{r}
-# view first few rows of dataset
-head(life_clean)
-
-# dimensions of dataset: 1649 rows x 20 columns
-dim(life_clean)
-```
+For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, etc., and see how these factors might explain the life expectancy. In this dataset, there are 1649 observations and 20 measurements, one being life expectancy.
 
 ## Data Partitioning
 
@@ -71,9 +63,11 @@ partitions <- life_clean %>%
 
 # creating training set
 train <- training(partitions)
+train %>% head(4)
 
 # creating test set
 test <- testing(partitions)
+test %>% head(4)
 ```
 
 ## Simple Linear Regression
@@ -81,13 +75,16 @@ test <- testing(partitions)
 We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the dataset.
 
 ```{r}
+# Model fitting on training set
 lin_mod <- lm(Life.expectancy ~ ., data = train)
 
+# Predictions for test set based on fitted model
 pred_lin <- predict(lin_mod, newdata = test)
 ```
 
 To evaluate the model performance, we will look at the $R^2$ and the Test Mean Squared Error (MSE).
 ```{r}
+# R Squared
 rss <- sum((pred_lin - test$Life.expectancy)^ 2)
 tss <- sum((test$Life.expectancy - mean(test$Life.expectancy)) ^ 2)
 rsq <- 1 - rss/tss
@@ -110,14 +107,14 @@ Ridge regression, which is also referred to as L2 regularization, is a method us
 The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix. We will reformat the training and testing set objects we created earlier to achieve this.
 
 ```{r}
-# cr
+# splitting predictors and response variable in training set
 train_x <- train %>%
   select(-Life.expectancy) %>%
   as.matrix()
 train_y <- train %>%
   pull(Life.expectancy)
 
-# creating test set
+# splitting predictors and response variable in test set
 test_x <- test %>%
   select(-Life.expectancy) %>%
   as.matrix()
@@ -186,43 +183,13 @@ The R-squared value for the ridge regression model on the testing data outputs t
 
 #### Background
 
-LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero, or produces sparse models. Thus, LASSO performs variable selection. This is well suited for when there is strong correlations between two or more predictor variables, known as multicollinearity, which creates redundant and skewed information in a regression model.
+LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero and performs variable selection. Similar to Ridge, LASSO  is well suited for datasets where multicollinearity may be present.
 
-```{r}
-library(dplyr)
-library(glmnet)
-library(caret)
-library(tidyverse)
-library(tidymodels)
-```
+LASSO adds a penalty by performing L1 regularization, which penalizes the sum of absolute values of the coefficients. This can be seen in the function below, which we want to miniimize:
 
-The package we will be working with for LASSO regression is the same as ridge regression, glmnet.
+$\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}|\beta_j|$
 
-```{r}
-# for reproducibility
-set.seed(13)
-
-# partition data
-partitions <- life_clean %>%
-  initial_split(prop = 0.8)
-
-# Training Set
-train_x <- training(partitions) %>%
-  select(-Life.expectancy) %>%
-  as.matrix()
-train_y <- training(partitions) %>%
-  pull(Life.expectancy)
-
-# Testing Set
-test_x <- testing(partitions) %>%
-  select(-Life.expectancy) %>%
-  as.matrix()
-test_y <- testing(partitions) %>%
-  pull(Life.expectancy)
-
-```
-
-Lambda is our tuning parameter for LASSO regression. We will find the optimal lambda value through cross validation.
+Lambda is the tuning parameter for LASSO regression. We will find the optimal lambda value through cross validation. We will use the glmnet package for LASSO jsut like ridge. We will also use the same training and test set that we created in the ridge regression section.
 
 ```{r}
 # lambda values we will choose from
@@ -240,31 +207,38 @@ best_lambda
 We now fit the model by specifying the optimal lambda, and alpha = 1 which corresponds to LASSO regression.
 
 ```{r}
+# Model fit on training set and optimal lambda value
 lasso_mod <- glmnet(train_x, train_y, alpha = 1, lambda = best_lambda, standardize = TRUE)
+
+# Checking the coefficients
+coef(lasso_mod)
 ```
 
 We will now apply the model to the test set to come up with a set of test predictions.
 
 ```{r}
+# Apply fitted model on test set
 pred_lasso <- predict(lasso_mod, s = best_lambda, newx = test_x)
 ```
 
 Using these predicted test values and actual test values, we will compute the test MSE to see how our model performed.
 
 ```{r}
+# R Squared
 actual <- test_y
 rss <- sum((pred_lasso - actual) ^ 2)
 tss <- sum((actual - mean(actual)) ^ 2)
 rsq <- 1 - rss/tss
 rsq 
 
-mse <- mean((pred-actual)^2)
+# Test Mean Squared Error
+mse <- mean((pred_lasso-actual)^2)
 mse
 ```
 
 #### Results
 
-The Test MSE for the LASSO model is 11.94086, in comparison to the Test MSE of the base linear model which is ...
+The R-squared value for the LASSO regression model on the testing data outputs to be **82.88%**, which is a **slight decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.** The MSE for our test partition set is **12.918**, which is slightly higher than the the test MSE of 12.907 of the linear regression model.
 
 ## Elastic Net Regression
 
