@@ -22,7 +22,7 @@ In this vignette you'll learn how to implement:
 -   LASSO Regression
 -   Elastic Net Regression
 
-**Setup**  
+**Setup**\
 First, we need to load all the required packages and import the data
 
 ```{r, echo = TRUE}
@@ -72,7 +72,9 @@ test %>% head(4)
 
 ## Simple Linear Regression
 
-We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the dataset.
+We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the data set. Linear regression works on the premise of minimizing the squared residuals of your predictions.
+
+$$argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2}$$
 
 ```{r}
 # Model fitting on training set
@@ -83,6 +85,7 @@ pred_lin <- predict(lin_mod, newdata = test)
 ```
 
 To evaluate the model performance, we will look at the $R^2$ and the Test Mean Squared Error (MSE).
+
 ```{r}
 # R Squared
 rss <- sum((pred_lin - test$Life.expectancy)^ 2)
@@ -96,13 +99,18 @@ test_mse
 ```
 
 #### Results
+
 Here, we see that our base linear regression model has a $R^2$ value of 0.829 and a test MSE of 12.907. We will use these as a basis for comparing the performance of the penalized regression models.
 
 ## Ridge Regression
 
 #### Background
 
-Ridge regression, which is also referred to as L2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.
+Ridge regression is a version of regression where we add an additional penalty term. The most popular form of ridge regression that we will be referring to is L2 regularization based on Tikhonov regularization. L2 regularization is best used when you have many many parameters and highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect. This penalization term comes from our betas, and a self selecting lambda . This lamda will be a larger penalty on larger $\beta_i$ . This in turns means we prefer smaller $\beta_i$ , in turn reducing variance. This helps with multicollinearity estimates tend to be unbiased but have large estimates with large variances. The general downside is that as we reduce variance we are introducing bias in our model.
+
+$$
+argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}\beta^2_j
+$$
 
 The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix. We will reformat the training and testing set objects we created earlier to achieve this.
 
@@ -157,7 +165,7 @@ best_ridge <- glmnet(train_x, train_y, alpha = 0, lambda = 0.01)
 coef(best_ridge)
 ```
 
-We then compute the $R^2$ value from the true and predicted values.
+We then compute the $$R^2$$ and the Test Mean Squared Error (MSE) from the True and Predicted values.
 
 ```{r}
 # apply prediction model to test_x
@@ -183,11 +191,11 @@ The R-squared value for the ridge regression model on the testing data outputs t
 
 #### Background
 
-LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero and performs variable selection. Similar to Ridge, LASSO  is well suited for datasets where multicollinearity may be present.
+LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero and performs variable selection. Similar to Ridge, LASSO is well suited for datasets where multicollinearity may be present.
 
-LASSO adds a penalty by performing L1 regularization, which penalizes the sum of absolute values of the coefficients. This can be seen in the function below, which we want to miniimize:
+LASSO adds a penalty by performing L1 regularization, which penalizes the sum of absolute values of the coefficients. This can be seen in the function below, which we want to minimize:
 
-$\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}|\beta_j|$
+$argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}|\beta_j|$
 
 Lambda is the tuning parameter for LASSO regression. We will find the optimal lambda value through cross validation. We will use the glmnet package for LASSO jsut like ridge. We will also use the same training and test set that we created in the ridge regression section.
 
