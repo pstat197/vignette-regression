@@ -241,7 +241,8 @@ First, we need to load all the required packages and import the data</p>
 </section>
 <section id="simple-linear-regression" class="level2">
 <h2 class="anchored" data-anchor-id="simple-linear-regression">Simple Linear Regression</h2>
-<p>We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the dataset.</p>
+<p>We will use a simple linear regression model as a basis for comparing all other models. This base model has the life expectancy as a linear function of all the other variables in the data set. Linear regression works on the premise of minimizing the squared residuals of your predictions.</p>
+<p><span class="math display">\[argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2}\]</span></p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-3_66f5f587c94d15cd40c746d7e09e921f">
 <div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model fitting on training set</span></span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>lin_mod <span class="ot">&lt;-</span> <span class="fu">lm</span>(Life.expectancy <span class="sc">~</span> ., <span class="at">data =</span> train)</span>
@@ -275,7 +276,10 @@ First, we need to load all the required packages and import the data</p>
 <h2 class="anchored" data-anchor-id="ridge-regression">Ridge Regression</h2>
 <section id="background" class="level4">
 <h4 class="anchored" data-anchor-id="background">Background</h4>
-<p>Ridge regression, which is also referred to as L2 regularization, is a method used when we have highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect.</p>
+<p>Ridge regression is a version of regression where we add an additional penalty term. The most popular form of ridge regression that we will be referring to is L2 regularization based on Tikhonov regularization. L2 regularization is best used when you have many many parameters and highly correlated parameters. This issue of multicollinearity in linear regression can return biased results. Multicollinearity will usually inflate the standard error of terms, resulting in inaccurate P values. Estimates will be biased and cannot be trusted. Ridge regression adds a penalization factor to linear regression. This penalization factor is the ridge parameter and is the tuning for ridge regression. Overall, ridge regression replace our residual estimation with residual plus a penalization term. So when we are minimizing our residuals the penalization term comes into effect. This penalization term comes from our betas, and a self selecting lambda . This lamda will be a larger penalty on larger <span class="math inline">\(\beta_i\)</span> . This in turns means we prefer smaller <span class="math inline">\(\beta_i\)</span> , in turn reducing variance. This helps with multicollinearity estimates tend to be unbiased but have large estimates with large variances. The general downside is that as we reduce variance we are introducing bias in our model.</p>
+<p><span class="math display">\[
+argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}\beta^2_j
+\]</span></p>
 <p>The package we will be working with for ridge regression is glmnet. There are some requirements for data formatting for this package. This means that our response variable will have to be in a vector. Our explanatory variables will have to be in a matrix. We will reformat the training and testing set objects we created earlier to achieve this.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-5_835633dfd19ccf4e9c57d4668aeb15a0">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># splitting predictors and response variable in training set</span></span>
@@ -363,7 +367,7 @@ Schooling                        9.202271e-01
 Status_Developing               -9.547526e-01</code></pre>
 </div>
 </div>
-<p>We then compute the <span class="math inline">\(R^2\)</span> value from the true and predicted values.</p>
+<p>We then compute the <span class="math display">\[R^2\]</span> and the Test Mean Squared Error (MSE) from the True and Predicted values.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-8_abc6c9bf0501eb6e404ff4887fd58e87">
 <div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># apply prediction model to test_x</span></span>
 <span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>pred <span class="ot">&lt;-</span> <span class="fu">predict</span>(best_ridge, <span class="at">s =</span> best_lambda, <span class="at">newx =</span> test_x)</span>
@@ -395,8 +399,8 @@ Status_Developing               -9.547526e-01</code></pre>
 <section id="background-1" class="level4">
 <h4 class="anchored" data-anchor-id="background-1">Background</h4>
 <p>LASSO (Least Absolute Shrinkage and Selection Operator) regression is a type of regression that shrinks the coefficients of the base linear regression model. It has the effect of forcing some of the coefficient estimates to be exactly zero and performs variable selection. Similar to Ridge, LASSO is well suited for datasets where multicollinearity may be present.</p>
-<p>LASSO adds a penalty by performing L1 regularization, which penalizes the sum of absolute values of the coefficients. This can be seen in the function below, which we want to miniimize:</p>
-<p><span class="math inline">\(\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}|\beta_j|\)</span></p>
+<p>LASSO adds a penalty by performing L1 regularization, which penalizes the sum of absolute values of the coefficients. This can be seen in the function below, which we want to minimize:</p>
+<p><span class="math inline">\(argmin\sum_{i=1}^{n}{(y_i - \sum_{j}{x_{ij}\beta_j})^2} + \lambda \sum_{j=1}^{p}|\beta_j|\)</span></p>
 <p>Lambda is the tuning parameter for LASSO regression. We will find the optimal lambda value through cross validation. We will use the glmnet package for LASSO jsut like ridge. We will also use the same training and test set that we created in the ridge regression section.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-9_e0a52f5dc7eacb361fad658f3b403201">
 <div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># lambda values we will choose from</span></span>
