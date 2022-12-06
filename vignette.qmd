@@ -49,7 +49,7 @@ life_clean <- read.csv(url)
 
 ## Exploratory Data Analysis
 
-For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, etc., and see how these factors might explain the life expectancy. In this dataset, there are 1649 observations and 20 measurements, one being life expectancy.
+For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one's health such as country, vaccinations given in that said country, infant mortality rate in the country, etc., and see how these factors might explain the life expectancy. In this data set, there are 2938 observations and 22 measurements, one being life expectancy. The main purpose of this data set is to further analyze how the developments in the health sector have contributed to the huge improvement in human mortality rates.
 
 ## Data Partitioning
 
@@ -250,6 +250,14 @@ The R-squared value for the LASSO regression model on the testing data outputs t
 
 ## Elastic Net Regression
 
+Elastic Net Regression is a type of regression that linearly combines the L1 and L2 penalties of lasso and ridge regression to optimize the model. By using both the L1 and L2 penalties we change the loss of the model to account for large coefficients, while also penalizing the model based on the sum of the absolute coefficient values. The formula for elastic net penalty is: $elasticnetpenalty = (\alpha * l_1penalty) + ((1 – alpha) * l_2penalty)$. We choose alpha based on how much contribution of each penalty we want the loss function to have. For example, if we fully want just L1 penalty, we would say alpha = 1, to get rid of the L2 penalty.
+
+The loss function is $elasticnetloss = loss + (\lambda * elasticnetpenalty)$. Lambda is another hyperparameter that is mentioned previously and that controls the weighting of the sum of both penalties to the loss function.
+
+Overall, the elastic net model solves the problem:
+
+$min_{\beta_0,\beta}(\frac{1}{2N}\sum_{i=1}^{N}(y_i−\beta_0−x_i^T\beta)^2+\lambda P_\alpha(\beta))$ where $P_\alpha(\beta) = \sum_{j=1}^{p}\frac{1-\alpha}{2}\beta_j^2+\alpha|\beta_j|$
+
 ```{r, results='hide'}
 # remove some categorical variables
 df <- life_clean
@@ -263,13 +271,10 @@ control <- trainControl(method = "repeatedcv",
                         verboseIter = TRUE)
 
 # Training ELastic Net Regression model
-elastic_model <- train(Life.expectancy ~ .,
-                       data = df,
-                       method = "glmnet",
-                       preProcess = c("center", "scale"),
-                       tuneLength = 25,
-                       trControl = control)
+# Train model to find optimum lambda and alpha values
 ```
+
+Based on the model training, we choose an alpha value of .694, and a lambda value of .00251 to train our model meaning we are giving a larger weight to the l1 penalty rather than the l2.
 
 ```{r}
 # Model Prediction
@@ -284,4 +289,10 @@ mse <- mean((x_hat_pre - df$Life.expectancy)^2)
 mse
 ```
 
+#### Results
+
+The R-squared value for the elastic net regression model on the testing data outputs to be **83.51%**, which is a **increase decrease in performance** compared with the linear regression model at a R-squared value of **82.90%.** The MSE for our test partition set is **12.75**, which is slightly lower than the the test MSE of the linear regression model. This shows that the elastic net model slightly improves both metrics compared to the rest of our regression models.
+
 ## Conclusion
+
+After analyzing each model, it can be concluded that the elastic net regression model is the most effective when it comes to this data set, and analyzing the regression between the explanatory variables and the life expectancy. This is most likely due to the fact that many of the variables in our data are highly correlated which is a factor that pushes for the use of elastic net.
