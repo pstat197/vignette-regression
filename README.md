@@ -16,4 +16,10 @@ an explanation of the directory structure of the repository
 
 ## Reference List
 
- 2 or more references to learn more about your topic.
+One resource to look at are the sections on penalized regression approaches in Dr. Andrea Bellavia's book “Statistical methods for Environmental Mixtures," covering the three approaches we went over.
+
+  https://bookdown.org/andreabellavia/mixtures/penalized-regression-approaches.html
+
+For a programming implementation in R, the following link compares the three different model conceptually and goes over the code:
+
+  https://www.pluralsight.com/guides/linear-lasso-and-ridge-regression-with-r
