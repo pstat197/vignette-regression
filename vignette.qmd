@@ -272,6 +272,12 @@ control <- trainControl(method = "repeatedcv",
 
 # Training ELastic Net Regression model
 # Train model to find optimum lambda and alpha values
+elastic_model <- train(Life.expectancy ~ .,
+                       data = df,
+                       method = "glmnet",
+                       preProcess = c("center", "scale"),
+                       tuneLength = 25,
+                       trControl = control)
 ```
 
 Based on the model training, we choose an alpha value of .694, and a lambda value of .00251 to train our model meaning we are giving a larger weight to the l1 penalty rather than the l2.

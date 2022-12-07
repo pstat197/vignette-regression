@@ -10,7 +10,6 @@ life_clean <- read.csv("data/life_clean.csv")
 # remove some categorical variables
 df <- life_clean %>% na.omit()
 x <- df %>% select(-c(Life.expectancy))
-train_data 
 
 # Model Building : Elastic Net Regression
 control <- trainControl(method = "repeatedcv",

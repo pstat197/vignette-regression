@@ -165,7 +165,7 @@ First, we need to load all the required packages and import the data</p>
 </section>
 <section id="exploratory-data-analysis" class="level2">
 <h2 class="anchored" data-anchor-id="exploratory-data-analysis">Exploratory Data Analysis</h2>
-<p>For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one’s health such as country, vaccinations given in that said country, infant mortality rate in the country, etc., and see how these factors might explain the life expectancy. In this dataset, there are 1649 observations and 20 measurements, one being life expectancy.</p>
+<p>For the project, we wanted to find a data set where analyzing the regression between explanatory and response variables would have an interesting and valuable result. For this reason we decided to analyze the WHO Life Expectancy data-set and look at the relationship between factors that affect one’s health such as country, vaccinations given in that said country, infant mortality rate in the country, etc., and see how these factors might explain the life expectancy. In this data set, there are 2938 observations and 22 measurements, one being life expectancy. The main purpose of this data set is to further analyze how the developments in the health sector have contributed to the huge improvement in human mortality rates.</p>
 </section>
 <section id="data-partitioning" class="level2">
 <h2 class="anchored" data-anchor-id="data-partitioning">Data Partitioning</h2>
@@ -480,7 +480,11 @@ Status_Developing               -9.452738e-01</code></pre>
 </section>
 <section id="elastic-net-regression" class="level2">
 <h2 class="anchored" data-anchor-id="elastic-net-regression">Elastic Net Regression</h2>
-<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-13_d90ebdf7442b9e3939bcc3d299dac7d4">
+<p>Elastic Net Regression is a type of regression that linearly combines the L1 and L2 penalties of lasso and ridge regression to optimize the model. By using both the L1 and L2 penalties we change the loss of the model to account for large coefficients, while also penalizing the model based on the sum of the absolute coefficient values. The formula for elastic net penalty is: <span class="math inline">\(elasticnetpenalty = (\alpha * l_1penalty) + ((1 – alpha) * l_2penalty)\)</span>. We choose alpha based on how much contribution of each penalty we want the loss function to have. For example, if we fully want just L1 penalty, we would say alpha = 1, to get rid of the L2 penalty.</p>
+<p>The loss function is <span class="math inline">\(elasticnetloss = loss + (\lambda * elasticnetpenalty)\)</span>. Lambda is another hyperparameter that is mentioned previously and that controls the weighting of the sum of both penalties to the loss function.</p>
+<p>Overall, the elastic net model solves the problem:</p>
+<p><span class="math inline">\(min_{\beta_0,\beta}(\frac{1}{2N}\sum_{i=1}^{N}(y_i−\beta_0−x_i^T\beta)^2+\lambda P_\alpha(\beta))\)</span> where <span class="math inline">\(P_\alpha(\beta) = \sum_{j=1}^{p}\frac{1-\alpha}{2}\beta_j^2+\alpha|\beta_j|\)</span></p>
+<div class="cell" data-hash="vignette_cache/html/unnamed-chunk-13_9c38e01ed30de3d1c18a6a19753ee583">
 <div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="co"># remove some categorical variables</span></span>
 <span id="cb31-2"><a href="#cb31-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> life_clean</span>
 <span id="cb31-3"><a href="#cb31-3" aria-hidden="true" tabindex="-1"></a>x <span class="ot">&lt;-</span> df <span class="sc">%&gt;%</span> <span class="fu">select</span>(<span class="sc">-</span><span class="fu">c</span>(Life.expectancy))</span>
@@ -493,13 +497,15 @@ Status_Developing               -9.452738e-01</code></pre>
 <span id="cb31-10"><a href="#cb31-10" aria-hidden="true" tabindex="-1"></a>                        <span class="at">verboseIter =</span> <span class="cn">TRUE</span>)</span>
 <span id="cb31-11"><a href="#cb31-11" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb31-12"><a href="#cb31-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Training ELastic Net Regression model</span></span>
-<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a>elastic_model <span class="ot">&lt;-</span> <span class="fu">train</span>(Life.expectancy <span class="sc">~</span> .,</span>
-<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> df,</span>
-<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"glmnet"</span>,</span>
-<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"scale"</span>),</span>
-<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">tuneLength =</span> <span class="dv">25</span>,</span>
-<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trControl =</span> control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb31-13"><a href="#cb31-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Train model to find optimum lambda and alpha values</span></span>
+<span id="cb31-14"><a href="#cb31-14" aria-hidden="true" tabindex="-1"></a>elastic_model <span class="ot">&lt;-</span> <span class="fu">train</span>(Life.expectancy <span class="sc">~</span> .,</span>
+<span id="cb31-15"><a href="#cb31-15" aria-hidden="true" tabindex="-1"></a>                       <span class="at">data =</span> df,</span>
+<span id="cb31-16"><a href="#cb31-16" aria-hidden="true" tabindex="-1"></a>                       <span class="at">method =</span> <span class="st">"glmnet"</span>,</span>
+<span id="cb31-17"><a href="#cb31-17" aria-hidden="true" tabindex="-1"></a>                       <span class="at">preProcess =</span> <span class="fu">c</span>(<span class="st">"center"</span>, <span class="st">"scale"</span>),</span>
+<span id="cb31-18"><a href="#cb31-18" aria-hidden="true" tabindex="-1"></a>                       <span class="at">tuneLength =</span> <span class="dv">25</span>,</span>
+<span id="cb31-19"><a href="#cb31-19" aria-hidden="true" tabindex="-1"></a>                       <span class="at">trControl =</span> control)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Based on the model training, we choose an alpha value of .694, and a lambda value of .00251 to train our model meaning we are giving a larger weight to the l1 penalty rather than the l2.</p>
 <div class="cell" data-hash="vignette_cache/html/unnamed-chunk-14_40960ef8d209d3a9a94463dbef18367b">
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Model Prediction</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>x_hat_pre <span class="ot">&lt;-</span> <span class="fu">predict</span>(elastic_model, x)</span>
@@ -517,9 +523,14 @@ Status_Developing               -9.452738e-01</code></pre>
 <pre><code>[1] 12.74611</code></pre>
 </div>
 </div>
+<section id="results-3" class="level4">
+<h4 class="anchored" data-anchor-id="results-3">Results</h4>
+<p>The R-squared value for the elastic net regression model on the testing data outputs to be <strong>83.51%</strong>, which is a <strong>increase decrease in performance</strong> compared with the linear regression model at a R-squared value of <strong>82.90%.</strong> The MSE for our test partition set is <strong>12.75</strong>, which is slightly lower than the the test MSE of the linear regression model. This shows that the elastic net model slightly improves both metrics compared to the rest of our regression models.</p>
+</section>
 </section>
 <section id="conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="conclusion">Conclusion</h2>
+<p>After analyzing each model, it can be concluded that the elastic net regression model is the most effective when it comes to this data set, and analyzing the regression between the explanatory variables and the life expectancy. This is most likely due to the fact that many of the variables in our data are highly correlated which is a factor that pushes for the use of elastic net.</p>
 </section>
 
 </main>
