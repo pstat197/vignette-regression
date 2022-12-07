@@ -6,14 +6,28 @@ Vignette on implementing penalized regression models using life expectancy data;
 Aleksander Cichosz, Anni Li, Brian Che, Justin Vo, Noa Rapoport
 
 ## Vignette Abstract
-
-a brief description in a few sentences of your vignette topic, example data, and outcomes.
+This vignette focuses on disscussing the difference between three regularization  method: LASSO, Ridge and Elastic Net. A dataset from WTO, containing life expectancy and other 19 variables collecting around the world, is used to fit penalized regression models. 
 
 
 ## Repository Contents
+-   `data` contains :
 
-an explanation of the directory structure of the repository
+    -   `data preprocessing` R script file containing the preprocessing code
+    
+    -   `life_clean.csv` processed data
+    
+    -   `life-expectancy-raw` raw data from Kaggle
+    
+-   `scripts` contains :
 
+    -   `vignette-script.R` an empty script file for you to copy and paste the example code 
+    -   `drafts` a folder contains all the example code
+    
+-   `vignette-regression.Rproj`
+
+-   `vignette.html`
+
+-   `vignette.qmd`
 ## Reference List
 
  2 or more references to learn more about your topic.
