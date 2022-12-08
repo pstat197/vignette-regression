@@ -307,7 +307,7 @@ After analyzing each model, it can be concluded that the elastic net regression 
 
 1.  Linear Regression Model: Test set RMSE of 12.907 and R-square of 82.9%.
 
-2.  Ridge Regression Model: Test set RMSE of 12.995 million and R-square of 82.79%.
+2.  Ridge Regression Model: Test set RMSE of 12.995 and R-square of 82.79%.
 
 3.  Lasso Regression Model: Test set RMSE of 12.918 and R-square of 82.88%.
 
