@@ -250,6 +250,8 @@ The R-squared value for the LASSO regression model on the testing data outputs t
 
 ## Elastic Net Regression
 
+#### **Background**
+
 Elastic Net Regression is a type of regression that linearly combines the L1 and L2 penalties of lasso and ridge regression to optimize the model. By using both the L1 and L2 penalties we change the loss of the model to account for large coefficients, while also penalizing the model based on the sum of the absolute coefficient values. The formula for elastic net penalty is: $elasticnetpenalty = (\alpha * l_1penalty) + ((1 – alpha) * l_2penalty)$. We choose alpha based on how much contribution of each penalty we want the loss function to have. For example, if we fully want just L1 penalty, we would say alpha = 1, to get rid of the L2 penalty.
 
 The loss function is $elasticnetloss = loss + (\lambda * elasticnetpenalty)$. Lambda is another hyperparameter that is mentioned previously and that controls the weighting of the sum of both penalties to the loss function.
@@ -301,4 +303,12 @@ The R-squared value for the elastic net regression model on the testing data out
 
 ## Conclusion
 
-After analyzing each model, it can be concluded that the elastic net regression model is the most effective when it comes to this data set, and analyzing the regression between the explanatory variables and the life expectancy. This is most likely due to the fact that many of the variables in our data are highly correlated which is a factor that pushes for the use of elastic net.
+After analyzing each model, it can be concluded that the elastic net regression model is the most effective when it comes to this data set, and analyzing the regression between the explanatory variables and the life expectancy. This is most likely due to the fact that many of the variables in our data are highly correlated which is a factor that pushes for the use of elastic net. Overall, it is not too surprising that lasso had a smaller R\^2, as it is possible that by attempting to produce a more simple and interpretative model, it sometimes misses important variables when selecting which variables to choose, especially when pairwise correlations among some variables are pretty high. The performance of the models is summarized below:
+
+1.  Linear Regression Model: Test set RMSE of 12.907 and R-square of 82.9%.
+
+2.  Ridge Regression Model: Test set RMSE of 12.995 million and R-square of 82.79%.
+
+3.  Lasso Regression Model: Test set RMSE of 12.918 and R-square of 82.88%.
+
+4.  ElasticNet Regression Model: Test set RMSE of 12.75 and R-square of 83.51%.
